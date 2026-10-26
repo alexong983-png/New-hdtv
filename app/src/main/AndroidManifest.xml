@@ -15,6 +15,7 @@
 
         <activity
             android:name=".MainActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,10 +23,5 @@
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity
-            android:name=".PlayerActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:exported="false" />
     </application>
 </manifest>
