@@ -18,6 +18,7 @@ fun rounded(
 }
 
 object Store {
+    var all: List<Channel> = emptyList()
     var list: List<Channel> = emptyList()
     var index: Int = 0
 }

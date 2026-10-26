@@ -112,6 +112,7 @@ class MainActivity : Activity() {
         }
         status.visibility = View.GONE
         all = list
+        Store.all = list
         groups = list.groupBy { it.group }
 
         tabRow.removeAllViews()
