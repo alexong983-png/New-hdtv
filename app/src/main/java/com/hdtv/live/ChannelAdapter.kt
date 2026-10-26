@@ -3,6 +3,7 @@ package com.hdtv.live
 import android.graphics.Color
 import android.text.TextUtils
 import android.view.Gravity
+import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -11,8 +12,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
-class ChannelAdapter(private val onClick: (Channel) -> Unit) :
-    RecyclerView.Adapter<ChannelAdapter.VH>() {
+class ChannelAdapter(
+    private val onClick: (Channel) -> Unit,
+    private val onFav: (Channel) -> Unit
+) : RecyclerView.Adapter<ChannelAdapter.VH>() {
 
     private var items: List<Channel> = emptyList()
 
@@ -66,17 +69,38 @@ class ChannelAdapter(private val onClick: (Channel) -> Unit) :
 
     override fun onBindViewHolder(h: VH, position: Int) {
         val ch = items[position]
-        h.label.text = ch.name
+        h.label.text = ch.label()
+        val placeholder = InitialsDrawable(ch.name)
         if (ch.logo.isBlank()) {
-            h.img.setImageResource(R.mipmap.ic_launcher)
+            Glide.with(h.img).clear(h.img)
+            h.img.setImageDrawable(placeholder)
         } else {
             Glide.with(h.img).load(ch.logo)
-                .error(R.mipmap.ic_launcher)
+                .placeholder(placeholder)
+                .error(InitialsDrawable(ch.name))
                 .into(h.img)
         }
         h.root.setOnClickListener {
             val p = h.bindingAdapterPosition
-            if (p >= 0) onClick(items[p])
+            if (p >= 0 && p < items.size) onClick(items[p])
+        }
+
+        // 确认键:短按播放,按住 3 秒加入 / 取消收藏
+        val hold = OkHold {
+            val p = h.bindingAdapterPosition
+            if (p >= 0 && p < items.size) {
+                onFav(items[p])
+                if (p < items.size) notifyItemChanged(p)
+            }
+        }
+        h.root.setOnKeyListener { _, k, e ->
+            if (k == KeyEvent.KEYCODE_DPAD_CENTER || k == KeyEvent.KEYCODE_ENTER) {
+                when (e.action) {
+                    KeyEvent.ACTION_DOWN -> hold.down(e.repeatCount)
+                    KeyEvent.ACTION_UP -> if (!hold.up()) h.root.performClick()
+                }
+                true
+            } else false
         }
     }
 
