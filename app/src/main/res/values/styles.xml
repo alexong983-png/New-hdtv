@@ -1,0 +1,4 @@
+<resources>
+    <style name="Theme.Hdtv" parent="Theme.Leanback">
+    </style>
+</resources>
